@@ -1,16 +1,23 @@
-import React, { useState } from 'react'
+import React, { useState,useCallback } from 'react'
 import Head from 'next/head'
 import AppLayout from '../components/AppLayout'
 import {Form, Input, Checkbox, Button} from 'antd'
 const SignUp=()=>{
+     const useInput=(initValue=null)=>{
+        const [value,setter]=useState(initValue);
+        const handler=useCallback((e)=>{setter(e.target.value);}
+        ,[])
+        return [value,handler];
+    }
+    const [id,onChangeId]=useInput('')
     // const [id,setId]=useState('');
-    const [nickname,setNick]=useState('');
-    const [password,setPassword]=useState('');
+    const [nickname,onchangeNick]=useInput('');
+    const [password,onchangePassword]=useInput('');
     const [passwordCheck,setPasswordCheck]=useState('');
     const [term,setTrem]=useState(false);
     const [passwordError,setPasswordError]=useState(false);
     const [termError,setTermError]=useState(false);
-    const onSubmit=(e)=>{
+    const onSubmit=useCallback((e)=>{
         e.preventDefault();//이건뭘까?
         if(password!==passwordCheck){
             setPasswordError(true);
@@ -21,34 +28,24 @@ const SignUp=()=>{
         console.log({
             id,nickname,password,passwordCheck,term
         })
-    };//아래 반복이 너무심하다 어떻게 바꿔볼것인가?
+    },[password,passwordCheck,term]);
+    //아래 반복이 너무심하다 어떻게 바꿔볼것인가?
+    //[]useCallback []안에 들어갈때에는 안에서쓰고있는 state를 넣어준다.
     // const onchangeId=(e)=>{setId(e.target.value)};
-    const onchangeNick=(e)=>{setNick(e.target.value)};
-    const onchangePassword=(e)=>{setPassword(e.target.value)};
-    const onchangePasswordCheck=(e)=>{
+  //  const onchangeNick=(e)=>{setNick(e.target.value)};
+    //const onchangePassword=(e)=>{setPassword(e.target.value)};
+    const onchangePasswordCheck=useCallback((e)=>{
         setPasswordError(e.target.value!==password);
         setPasswordCheck(e.target.value)
-    };
-    const onChangeTerm=(e)=>{
+    },[password]);
+    const onChangeTerm=useCallback((e)=>{
         setTermError(false);
         setTrem(e.target.checked)
-    };
-    const useInput=(initValue=null)=>{
-        const [value,setter]=useState(initValue);
-        const handler=(e)=>{setter(e.target.value);}
-        
-        return [value,handler];
-    }
-    const [id,onChangeId]=useInput('')
+    },[]);
 
     return(
     
-    <div>
-        <Head>
-            <title>SNSsite</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/3.25.3/antd.css"/>
-        </Head>
-    <AppLayout>
+    <>
         <Form onSubmit={onSubmit}>
             <div>
                 <label htmlFor='user-id'>아이디</label><br/>
@@ -74,9 +71,8 @@ const SignUp=()=>{
             <div>
                 <Button type='primary'  htmlType="submit">가입하기</Button>{/*primary 파란색 타입 */}
             </div>
-        </Form>
-    </AppLayout>
-    </div>
+        </Form>  
+    </>
     );
 };
 

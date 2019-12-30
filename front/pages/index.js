@@ -1,25 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Form,Input, Button, Card, Icon, Avatar} from 'antd';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
-const dummy={
-    isLoggendIn:true,
-    imagePaths:[],
-    mainPosts: [{
-        User: {
-            id: 1,
-            nickname: 'seung'
-        },
-        content: '첫번째 게시글',
-        img: "https: //placeimg.com/200/200"
-    }],
-   
-}
+import {useDispatch,useSelector} from 'react-redux'
+import {loginAction,logoutAction} from '../reducers/user'
+
+
 const Home=()=>{
+    const dispatch=useDispatch();//액션 디스패치하는 hooks
+    const {user}=useSelector(state=>state.user)//reducer에있는 state를 가져온다
+    const {isLoggedIn}=useSelector(state=>state.user.isLoggedIn)
+    const {mainPosts}=useSelector(state=>state.post)
+    useEffect(()=>{
+        dispatch(loginAction);
+    },[])
     return(
         <div>
-        {dummy.isLoggendIn&&<PostForm/>}
-            {dummy.mainPosts.map((c)=>{
+        {user ? <div>로그인 하였습니다.</div>:<div>로그아웃 하였습니다</div>}
+        {isLoggedIn&&<PostForm/>}
+            {mainPosts.map((c)=>{
                 return(
                    <PostCard key={c} post={c}/>
                 )

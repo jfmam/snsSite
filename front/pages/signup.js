@@ -2,6 +2,8 @@ import React, { useState,useCallback } from 'react'
 import Head from 'next/head'
 import AppLayout from '../components/AppLayout'
 import {Form, Input, Checkbox, Button} from 'antd'
+import { useDispatch, useSelector } from 'react-redux';
+import { signUpAction } from '../reducers/user';
 const SignUp=()=>{
      const useInput=(initValue=null)=>{
         const [value,setter]=useState(initValue);
@@ -17,6 +19,8 @@ const SignUp=()=>{
     const [term,setTrem]=useState(false);
     const [passwordError,setPasswordError]=useState(false);
     const [termError,setTermError]=useState(false);
+    
+    const dispatch=useDispatch();
     const onSubmit=useCallback((e)=>{
         e.preventDefault();//이건뭘까?
         if(password!==passwordCheck){
@@ -25,6 +29,9 @@ const SignUp=()=>{
         if(!term){
             setTermError(true);
         }
+        dispatch(signUpAction({
+            id,password,nickname
+        }))
         console.log({
             id,nickname,password,passwordCheck,term
         })

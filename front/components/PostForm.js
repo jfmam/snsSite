@@ -1,21 +1,11 @@
 import React from 'react'
 import {Input,Button,Form} from 'antd'
+import { useSelector } from 'react-redux';
 
-const dummy = {
-    isLoggendIn: true,
-    imagePaths: [],
-    mainPosts: [{
-        User: {
-            id: 1,
-            nickname: 'seung'
-        },
-        content: '첫번째 게시글',
-        img: "https: //placeimg.com/200/200"
-    }],
 
-}
 
 const PostForm=()=>{
+    const {imagePaths}=useSelector(state=>state.post.imagePaths)
     return(<Form encType="multipart/form-data">
             <Input.TextArea maxLength={140} placeholder="어떤 일이 있었나요?"/>
             <div>
@@ -24,9 +14,9 @@ const PostForm=()=>{
                 <Button type='primary' style={{float:'right'}}>SNS</Button>
             </div>
             <div>
-                {dummy.imagePaths.map((value,index)=>{
+                {imagePaths.map((value)=>{
                     return(
-                        <div key={index} style={{display:'inline-block'}}>
+                        <div key={value} style={{display:'inline-block'}}>
                             <img src="https://placeimg.com/200/200" style={{width:'200px'}} alt={value}/>
                             <div>
                                 <Button>제거</Button>

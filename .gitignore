@@ -1,3 +1,4 @@
 front/node_modules
 front/.eslintrc
-front/.next/*
+front/next/*
+front/.next

@@ -8,6 +8,8 @@ import {Provider} from 'react-redux'
 import withRedux from 'next-redux-wrapper'
 import {createStore,compose,applyMiddleware} from 'redux'
 import reducer from '../reducers'
+import createSagaMiddleware from 'redux-saga'
+import rootSaga from '../sagas';
 
 const SnsSite=({Component,store})=>{//component는 next에서 넣어주는 props
   
@@ -26,17 +28,23 @@ const SnsSite=({Component,store})=>{//component는 next에서 넣어주는 props
 };
 
 SnsSite.propTypes={
-    Component:propTypes.elementType,
+    Component:propTypes.elementType.isRequired,
     store:propTypes.object
     //프로그램의 안정성 증가.종류가많아서 문서를 확인하자.
 }
-export default withRedux((initiolState,options)=>{
-   // const store=createStore(reducer,initiolState);
-    const middlewares=[];
-    const enhancer=compose(
-        applyMiddleware(...middlewares),
-    typeof window !=='undefined'&&window.__REDUX_DEVTOOLS_EXTENSION__ !== 'undefinded' ? window.__REDUX_DEVTOOLS_EXTENSION__():(f)=>f,) //compose미들웨어 합치기,미들웨어 적용하기
-   
-    const store=createStore(reducer,initiolState,enhancer)
-    return store;
-})(SnsSite);
+
+const configureStore = (initialState, options) => {
+  const sagaMiddleware = createSagaMiddleware();//리덕스에 미들웨어 등록
+  const middlewares = [sagaMiddleware];
+  const enhancer = process.env.NODE_ENV === 'production' //production일때 실제 서비스 development는 개발용 리덕스 state가 안나오게 설정해준다
+    ? compose(applyMiddleware(...middlewares))//enhancer부분은 암기해야한다
+    : compose(
+      applyMiddleware(...middlewares),
+      !options.isServer && typeof window.__REDUX_DEVTOOLS_EXTENSION__ !== 'undefined' ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f,
+    );//개발용일때 devtools 사용가능하다.
+  const store = createStore(reducer, initialState, enhancer);
+  sagaMiddleware.run(rootSaga);//saga등록 
+  return store;
+};
+
+export default withRedux(configureStore)(SnsSite);

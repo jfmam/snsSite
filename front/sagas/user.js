@@ -1,4 +1,4 @@
-import {all,fork,delay,take,takeLatest} from 'redux-saga/effects'
+import {all,fork,delay,take,takeLatest,call,put,takeEvery} from 'redux-saga/effects'
 import axios from 'axios'
 import {LOG_IN_REQUEST,LOG_IN_FAILURE,LOG_IN_SUCCESS,SIGN_UP_REQUEST,SIGN_UP_SUCCESS,SIGN_UP_FAILURE} from '../reducers/user'
 
@@ -6,8 +6,8 @@ function loginAPI(){
     return axios.post('/login',)
 }//서버에 요청을 보내는부분
 
-function signUpAPI(){
-    return axios.post('/signUp')
+function signUpAPI(signUpData){
+    return axios.post('http://localhost:4000/api/user',signUpData)
 }
 
 function* login() {//로그인액션
@@ -25,9 +25,9 @@ function* login() {//로그인액션
     }
 }
 
-function* signUp() { //로그인액션
+function* signUp(action) { //로그인액션
     try {
-        yield call(signUpAPI);
+        yield call(signUpAPI,action.data);//signUpAPI로 데이타전달
         yield put({ //dispatch와 동일하다.
             type: SIGN_UP_SUCCESS //요청을보내고 성공
         })
@@ -47,8 +47,7 @@ function* watchLogin(){//*제네레이터 함수
 
 
 function* watchSignUp(){//*제네레이터 함수
-
-    yield takeLatest(SIGN_UP_REQUEST,signUp)
+    yield takeEvery(SIGN_UP_REQUEST,signUp)
 }
 
 export default function* userSaga(){//등록하는부분

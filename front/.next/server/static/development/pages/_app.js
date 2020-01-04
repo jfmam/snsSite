@@ -3010,40 +3010,41 @@ function loginAPI() {
 } //서버에 요청을 보내는부분
 
 
-function signUpAPI() {
-  return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post('/signUp');
+function signUpAPI(signUpData) {
+  return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post('http://localhost:4000/api/user', signUpData);
 }
 
 function* login() {
   //로그인액션
   try {
     yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["delay"])(1000);
-    yield call(loginAPI);
-    yield put({
+    yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["call"])(loginAPI);
+    yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["put"])({
       //dispatch와 동일하다.
       type: _reducers_user__WEBPACK_IMPORTED_MODULE_2__["LOG_IN_SUCCESS"] //요청을보내고 성공
 
     });
   } catch (e) {
     console.error(e);
-    yield put({
+    yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["put"])({
       type: _reducers_user__WEBPACK_IMPORTED_MODULE_2__["LOG_IN_FAILURE"]
     });
   }
 }
 
-function* signUp() {
+function* signUp(action) {
   //로그인액션
   try {
-    yield call(signUpAPI);
-    yield put({
+    yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["call"])(signUpAPI, action.data); //signUpAPI로 데이타전달
+
+    yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["put"])({
       //dispatch와 동일하다.
       type: _reducers_user__WEBPACK_IMPORTED_MODULE_2__["SIGN_UP_SUCCESS"] //요청을보내고 성공
 
     });
   } catch (e) {
     console.error(e);
-    yield put({
+    yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["put"])({
       type: _reducers_user__WEBPACK_IMPORTED_MODULE_2__["SIGN_UP_FAILURE"]
     });
   }
@@ -3057,7 +3058,7 @@ function* watchLogin() {
 
 function* watchSignUp() {
   //*제네레이터 함수
-  yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["takeLatest"])(_reducers_user__WEBPACK_IMPORTED_MODULE_2__["SIGN_UP_REQUEST"], signUp);
+  yield Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_0__["takeEvery"])(_reducers_user__WEBPACK_IMPORTED_MODULE_2__["SIGN_UP_REQUEST"], signUp);
 }
 
 function* userSaga() {

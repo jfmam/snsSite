@@ -1,11 +1,13 @@
-import user from './user'
-import post from './post'
-import {all,call} from 'redux-saga/effects'
+import { all, fork } from 'redux-saga/effects';
+import axios from 'axios';
+import user from './user';
+import post from './post';
 
-export default function* rootsaga(){
-    //무한의 개념,또는 비동기
-    yield all([
-        call(user),
-        call(post)
-    ])
+axios.defaults.baseURL = 'http://localhost:4000/api';
+
+export default function* rootSaga() {
+  yield all([
+    fork(user),
+    fork(post),
+  ]);
 }

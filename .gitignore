@@ -4,3 +4,4 @@ front/next/*
 front/.next
 back/node_modules
 back/config
+back/.env

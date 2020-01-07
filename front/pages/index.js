@@ -1,28 +1,31 @@
+  
 import React, { useEffect } from 'react';
-import {Form,Input, Button, Card, Icon, Avatar} from 'antd';
+import { useSelector, useDispatch } from 'react-redux';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
-import {useDispatch,useSelector} from 'react-redux'
+import { LOAD_MAIN_POSTS_REQUEST } from '../reducers/post';
 
+const Home = () => {
+  const { me } = useSelector(state => state.user);
+  const { mainPosts } = useSelector(state => state.post);
+  const dispatch = useDispatch();
 
-const Home=()=>{
-    const dispatch=useDispatch();//액션 디스패치하는 hooks
-    const {user}=useSelector(state=>state.user)//reducer에있는 state를 가져온다
-    const {isLoggedIn}=useSelector(state=>state.user.isLoggedIn)
-    const {mainPosts}=useSelector(state=>state.post)
+  useEffect(() => {
+    dispatch({
+      type: LOAD_MAIN_POSTS_REQUEST,
+    });
+  }, []);
 
-    return(
-        <div>
-        {user ? <div>로그인 하였습니다.</div>:<div>로그아웃 하였습니다</div>}
-        {isLoggedIn&&<PostForm/>}
-            {mainPosts.map((c)=>{
-                return(
-                   <PostCard key={c} post={c}/>
-                )
-            })}
-        </div>
-    );
+  return (
+    <div>
+      {me && <PostForm />}
+      {mainPosts.map((c) => {
+        return (
+          <PostCard key={c} post={c} />
+        );
+      })}
+    </div>
+  );
 };
-
 
 export default Home;

@@ -22,7 +22,7 @@ const dummyPost = {
   id: 2,
   User: {
     id: 1,
-    nickname: 'seung',
+    nickname: '제로초',
   },
   content: '나는 더미입니다.',
   Comments: [],
@@ -32,7 +32,7 @@ const dummyComment = {
   id: 1,
   User: {
     id: 1,
-    nickname: 'seung',
+    nickname: '제로초',
   },
   createdAt: new Date(),
   content: '더미 댓글입니다.',
@@ -98,7 +98,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isAddingPost: false,
-        mainPosts: [dummyPost, ...state.mainPosts],
+        mainPosts: [action.data, ...state.mainPosts],
         postAdded: true,
       };
     }
@@ -137,6 +137,23 @@ export default (state = initialState, action) => {
         addCommentErrorReason: action.error,
       };
     }
+    case LOAD_MAIN_POSTS_REQUEST: {
+      return {
+        ...state,
+        mainPosts: [],
+      };
+    }
+    case LOAD_MAIN_POSTS_SUCCESS: {
+      return {
+        ...state,
+        mainPosts: action.data,
+      };
+    }
+    case LOAD_MAIN_POSTS_FAILURE: {
+      return {
+        ...state,
+      };
+    }
     default: {
       return {
         ...state,
@@ -144,4 +161,3 @@ export default (state = initialState, action) => {
     }
   }
 };
-//스프레드언어를 쓸 경우 가독성이 떨어져 immutable이나 immer를 쓴다 적용해보도록하자.

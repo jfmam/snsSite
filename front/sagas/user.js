@@ -1,66 +1,133 @@
-import {all,fork,delay,take,takeLatest,call,put,takeEvery} from 'redux-saga/effects'
-import axios from 'axios'
-import {LOG_IN_REQUEST,LOG_IN_FAILURE,LOG_IN_SUCCESS,SIGN_UP_REQUEST,SIGN_UP_SUCCESS,SIGN_UP_FAILURE} from '../reducers/user'
+import { all, call, fork, put, takeEvery } from 'redux-saga/effects';
+import axios from 'axios';
+import {
+  LOAD_USER_FAILURE,
+  LOAD_USER_REQUEST,
+  LOAD_USER_SUCCESS,
+  LOG_IN_FAILURE,
+  LOG_IN_REQUEST,
+  LOG_IN_SUCCESS,
+  LOG_OUT_FAILURE,
+  LOG_OUT_REQUEST,
+  LOG_OUT_SUCCESS,
+  SIGN_UP_FAILURE,
+  SIGN_UP_REQUEST,
+  SIGN_UP_SUCCESS,
+} from '../reducers/user';
 
-function loginAPI(){
-    return axios.post('/login',)
-}//서버에 요청을 보내는부분
+axios.defaults.baseURL = 'http://localhost:4000/api'
 
-function signUpAPI(signUpData){
-    return axios.post('http://localhost:4000/api/user',signUpData)
+function logInAPI(loginData) {
+  // 서버에 요청을 보내는 부분
+  return axios.post('/user/login', loginData, {
+    withCredentials: true,
+  });
 }
 
-function* login() {//로그인액션
-    try{
-        yield delay(1000)
-        yield call(loginAPI);
-        yield put({//dispatch와 동일하다.
-            type:LOG_IN_SUCCESS//요청을보내고 성공
-        })
-    }catch (e){
-        console.error(e);
-        yield put({
-            type:LOG_IN_FAILURE
-        })
-    }
+function* logIn(action) {
+  try {
+    const result = yield call(logInAPI, action.data);
+    yield put({ // put은 dispatch 동일
+      type: LOG_IN_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: LOG_IN_FAILURE,
+    });
+  }
 }
 
-function* signUp(action) { //로그인액션
-    try {
-        yield call(signUpAPI,action.data);//signUpAPI로 데이타전달
-        yield put({ //dispatch와 동일하다.
-            type: SIGN_UP_SUCCESS //요청을보내고 성공
-        })
-    } catch (e) {
-        console.error(e);
-        yield put({
-            type: SIGN_UP_FAILURE
-        })
-    }
+function* watchLogIn() {
+  yield takeEvery(LOG_IN_REQUEST, logIn);
 }
 
-
-function* watchLogin(){//*제네레이터 함수
-
-    yield takeLatest(LOG_IN_REQUEST,login)
-}//사가가 로그인이 들어오는지 수시로확인
-
-
-function* watchSignUp(){//*제네레이터 함수
-    yield takeEvery(SIGN_UP_REQUEST,signUp)
+function signUpAPI(signUpData) {
+  // 서버에 요청을 보내는 부분
+  return axios.post('/user/', signUpData);
 }
 
-export default function* userSaga(){//등록하는부분
-    yield all([//여러개 등록하고싶을때 all을 사용
-        fork(watchLogin),
-        fork(watchSignUp)
-    ])
+function* signUp(action) {
+  try {
+    // yield call(signUpAPI);
+    yield call(signUpAPI, action.data);
+    yield put({ // put은 dispatch 동일
+      type: SIGN_UP_SUCCESS,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: SIGN_UP_FAILURE,
+      error: e,
+    });
+  }
 }
 
-// fork와 call :둘다 함수를 실행해준다.fork는 비동기호출 call은 동기호출이다
-// call은 응답이 다 받아질 때까지 기다린다
-//fork는 data를 받을필요가없을때 console.log같은경우
+function* watchSignUp() {
+  yield takeEvery(SIGN_UP_REQUEST, signUp);
+}
 
-//watchfunction만들기
-//takelatest,every 고르기
-//실행동작 코딩
+function logOutAPI() {
+  // 서버에 요청을 보내는 부분
+  return axios.post('/user/logout', {}, {
+    withCredentials: true,
+  });
+}
+
+function* logOut() {
+  try {
+    // yield call(logOutAPI);
+    yield call(logOutAPI);
+    yield put({ // put은 dispatch 동일
+      type: LOG_OUT_SUCCESS,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: LOG_OUT_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchLogOut() {
+  yield takeEvery(LOG_OUT_REQUEST, logOut);
+}
+
+function loadUserAPI() {
+  // 서버에 요청을 보내는 부분
+  return axios.get('/user/', {
+    withCredentials: true,
+  });
+}
+
+function* loadUser() {
+  try {
+    // yield call(loadUserAPI);
+    const result = yield call(loadUserAPI);
+    yield put({ // put은 dispatch 동일
+      type: LOAD_USER_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: LOAD_USER_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchLoadUser() {
+  yield takeEvery(LOAD_USER_REQUEST, loadUser);
+}
+
+export default function* userSaga() {
+  yield all([
+    fork(watchLogIn),
+    fork(watchLogOut),
+    fork(watchLoadUser),
+    fork(watchSignUp),
+  ]);
+}

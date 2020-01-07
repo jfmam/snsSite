@@ -1,14 +1,24 @@
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect } from 'react'
 import {Menu,Input,Row,Col} from 'antd'
 import LoginForm from './LoginForm'
 import UserProfile from './UserProfile'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { LOAD_USER_REQUEST } from '../reducers/user'
 
 
 const AppLayout=({children})=>{
-    const {isLoggedIn}=useSelector(state=>state.user)
- return(
+    const {me}=useSelector(state=>state.user)
+    const dispatch=useDispatch();
+    useEffect(()=>{
+        if(!me){
+            dispatch({
+                type:LOAD_USER_REQUEST
+            })
+        }
+    },[])//쿠키가 있으면 새로고침 하여도 로그인 유지.
+ 
+    return(
     <div>
         <Menu mode="horizontal">
             <Menu.Item key="home"><Link href="/"><a>HOME</a></Link></Menu.Item>
@@ -21,7 +31,7 @@ const AppLayout=({children})=>{
         <Row>
             <Col xs={24} md={6}>
                 
-     {isLoggedIn?<UserProfile/>:<LoginForm/>
+     {me?<UserProfile/>:<LoginForm/>
                     }
             </Col>{/*xs:모바일 sm:작은화면 md:중간화면,lg:큰화면 반응형  */}
             <Col xs={24} md={6}> {children}</Col>

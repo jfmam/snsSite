@@ -24,7 +24,7 @@ function logInAPI(loginData) {
   });
 }
 
-function* logIn(action) {
+function* logIn(action) {//액션을 파라미터로 받을수있다.
   try {
     const result = yield call(logInAPI, action.data);
     yield put({ // put은 dispatch 동일
@@ -40,7 +40,7 @@ function* logIn(action) {
 }
 
 function* watchLogIn() {
-  yield takeEvery(LOG_IN_REQUEST, logIn);
+  yield takeEvery(LOG_IN_REQUEST, logIn);//LOGINREQUEST안에 type과 data가 모두담겨있다 요청=>logIn으로이동
 }
 
 function signUpAPI(signUpData) {

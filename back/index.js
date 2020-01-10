@@ -18,25 +18,27 @@ db.sequelize.sync();
 passportConfig();
 
 app.use(morgan('dev'));
+
 app.use(cors({
   origin: true,
   credentials: true,//쿠키교환 담당 프론트 withcredentials 사용
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(expressSession({
+
+app.use(cookieParser(process.env.COOKIE_SECRET));//1.cookieparser 생성 =>쿠키 번호 생성
+app.use(expressSession({//session 생성
   resave: false,
   saveUninitialized: false,
   secret: process.env.COOKIE_SECRET,
   cookie: {
-    httpOnly: true,
+    httpOnly: true,//http사용
     secure: false, // https를 쓸 때 true
   },
   name: 'ssnr',//cookie 이름
 }));
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.initialize());//passport초기화
+app.use(passport.session());//passport 세션 사용
 
 // API는 다른 서비스가 내 서비스의 기능을 실행할 수 있게 열어둔 창구
 app.use('/api/user', userAPIRouter);

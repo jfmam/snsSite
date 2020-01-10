@@ -16,7 +16,7 @@ const PostForm = () => {
 
   const onSubmitForm = useCallback((e) => {
     e.preventDefault();
-    if (!text || !text.trim()) {
+    if (!text || !text.trim()) {//문자열의 양쪽공백 제거 space 방지
       return alert('게시글을 작성하세요.');
     }
     dispatch({
